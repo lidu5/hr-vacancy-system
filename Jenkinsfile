@@ -51,9 +51,15 @@ set -e
 # Navigate to application directory
 cd /opt/hr_vacancy_system
 
-# Pull latest changes from GitHub
+# Configure git to use public repository without credentials
+echo "Configuring git repository..."
+git config --global credential.helper store
+git remote set-url origin https://github.com/lidu5/hr-vacancy-system.git
+
+# Reset any local changes and pull latest
 echo "Pulling latest code from GitHub..."
-git pull origin main
+git fetch origin
+git reset --hard origin/main
 
 echo "Code updated successfully"
 ENDSSH
