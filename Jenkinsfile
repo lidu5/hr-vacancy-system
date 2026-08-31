@@ -44,22 +44,19 @@ pipeline {
                     script {
                         echo "Deploying to ${REMOTE_HOST}..."
                         sh '''
-                            # Create application directory on remote server
-                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${APP_DIR}"
-                            
-                            # Copy project files to remote server
-                            echo "Copying files to remote server..."
-                            rsync -avz --delete \
-                                --exclude 'node_modules' \
-                                --exclude 'venv' \
-                                --exclude '.git' \
-                                --exclude '__pycache__' \
-                                --exclude '*.pyc' \
-                                --exclude 'media' \
-                                --exclude '.env' \
-                                ./ ${REMOTE_USER}@${REMOTE_HOST}:${APP_DIR}/
-                            
-                            echo "Files copied successfully"
+                            # Update code on remote server using git pull
+                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'ENDSSH'
+set -e
+
+# Navigate to application directory
+cd ${APP_DIR}
+
+# Pull latest changes from GitHub
+echo "Pulling latest code from GitHub..."
+git pull origin main
+
+echo "Code updated successfully"
+ENDSSH
                         '''
                     }
                 }
