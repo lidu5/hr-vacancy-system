@@ -3,8 +3,8 @@ pipeline {
     
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
-        REMOTE_HOST = '196.191.93.56'
-        REMOTE_USER = 'root'
+        REMOTE_HOST = '10.10.20.167'
+        REMOTE_USER = 'moa'
         APP_DIR = '/opt/hr_vacancy_system'
         SSH_CREDENTIALS_ID = 'hr-vacancy-ssh-key'
     }
