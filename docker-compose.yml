@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: hr_vacancy_db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hr_network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./Backend/hr_vacancy_system
+      dockerfile: Dockerfile
+    container_name: hr_vacancy_backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8000 --workers 3 hr_vacancy_system.wsgi:application"
+    volumes:
+      - ./Backend/hr_vacancy_system:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    environment:
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    depends_on:
+      - db
+    networks:
+      - hr_network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Frontend/frontend
+      dockerfile: Dockerfile
+    container_name: hr_vacancy_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - hr_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+networks:
+  hr_network:
+    driver: bridge
