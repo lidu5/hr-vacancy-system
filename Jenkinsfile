@@ -28,8 +28,8 @@ pipeline {
                             echo "Error: docker-compose.yml not found!"
                             exit 1
                         fi
-                        if [ ! -f .env.production ]; then
-                            echo "Error: .env.production not found!"
+                        if [ ! -f Jenkinsfile ]; then
+                            echo "Error: Jenkinsfile not found!"
                             exit 1
                         fi
                         echo "Configuration files validated successfully"
@@ -200,19 +200,7 @@ ENDSSH
             echo '========================================='
             echo 'Deployment failed!'
             echo '========================================='
-            sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
-                sh '''
-                    echo "Fetching error logs from remote server..."
-                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'ENDSSH'
-cd ${APP_DIR}
-echo "Container status:"
-docker-compose ps
-echo ""
-echo "Error logs:"
-docker-compose logs --tail=50
-ENDSSH
-                ''' || true
-            }
+            echo 'Check the console output above for error details'
         }
         always {
             echo 'Pipeline execution completed'
