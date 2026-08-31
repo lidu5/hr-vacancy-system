@@ -43,13 +43,13 @@ pipeline {
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     script {
                         echo "Deploying to ${REMOTE_HOST}..."
-                        sh '''
+                        sh """
                             # Update code on remote server using git pull
                             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'ENDSSH'
 set -e
 
 # Navigate to application directory
-cd ${APP_DIR}
+cd /opt/hr_vacancy_system
 
 # Pull latest changes from GitHub
 echo "Pulling latest code from GitHub..."
@@ -57,7 +57,7 @@ git pull origin main
 
 echo "Code updated successfully"
 ENDSSH
-                        '''
+                        """
                     }
                 }
             }
@@ -68,10 +68,10 @@ ENDSSH
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     script {
                         echo "Building and starting Docker containers..."
-                        sh '''
+                        sh """
                             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'ENDSSH'
 set -e
-cd ${APP_DIR}
+cd /opt/hr_vacancy_system
 
 # Load environment variables
 if [ -f .env.production ]; then
@@ -97,7 +97,7 @@ sleep 15
 # Check if containers are running
 docker-compose ps
 ENDSSH
-                        '''
+                        """
                     }
                 }
             }
@@ -108,9 +108,9 @@ ENDSSH
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     script {
                         echo "Running database migrations..."
-                        sh '''
+                        sh """
                             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'ENDSSH'
-cd ${APP_DIR}
+cd /opt/hr_vacancy_system
 
 # Run migrations
 echo "Running database migrations..."
@@ -122,7 +122,7 @@ docker-compose exec -T backend python manage.py collectstatic --noinput
 
 echo "Database setup completed"
 ENDSSH
-                        '''
+                        """
                     }
                 }
             }
@@ -155,9 +155,9 @@ ENDSSH
                 sshagent(credentials: [env.SSH_CREDENTIALS_ID]) {
                     script {
                         echo "Verifying deployment..."
-                        sh '''
+                        sh """
                             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'ENDSSH'
-cd ${APP_DIR}
+cd /opt/hr_vacancy_system
 
 echo "==================================="
 echo "Deployment Verification"
@@ -177,7 +177,7 @@ echo "==================================="
 echo "Deployment completed successfully!"
 echo "==================================="
 ENDSSH
-                        '''
+                        """
                     }
                 }
             }
