@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'builtin-linux'
+    }
     
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
