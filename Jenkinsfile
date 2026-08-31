@@ -118,13 +118,32 @@ ENDSSH
                             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << 'ENDSSH'
 cd /opt/hr_vacancy_system
 
+# Wait for backend to be fully ready
+echo "Waiting for backend container to be ready..."
+sleep 10
+
+# Check if backend container is running
+if ! docker-compose ps backend | grep -q "Up"; then
+    echo "Backend container is not running!"
+    docker-compose logs backend
+    exit 1
+fi
+
 # Run migrations
 echo "Running database migrations..."
-docker-compose exec -T backend python manage.py migrate
+docker-compose exec -T backend python manage.py migrate || {
+    echo "Migration failed, showing logs:"
+    docker-compose logs backend
+    exit 1
+}
 
 # Collect static files
 echo "Collecting static files..."
-docker-compose exec -T backend python manage.py collectstatic --noinput
+docker-compose exec -T backend python manage.py collectstatic --noinput || {
+    echo "Collectstatic failed, showing logs:"
+    docker-compose logs backend
+    exit 1
+}
 
 echo "Database setup completed"
 ENDSSH
