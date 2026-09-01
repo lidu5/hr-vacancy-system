@@ -281,9 +281,9 @@ function ApplicationDetail() {
           <div className="content-grid">
             <div className="content-card full-width">
               <h2>Education</h2>
-              {application.candidate.education && application.candidate.education.length > 0 ? (
+              {application.candidate.education_history && application.candidate.education_history.length > 0 ? (
                 <div className="education-list">
-                  {application.candidate.education.map((edu, index) => (
+                  {application.candidate.education_history.map((edu, index) => (
                     <div key={index} className="education-item">
                       <div className="edu-header">
                         <h3>{edu.degree || edu.institution}</h3>
@@ -302,9 +302,9 @@ function ApplicationDetail() {
 
             <div className="content-card full-width">
               <h2>Training & Certifications</h2>
-              {application.candidate.training && application.candidate.training.length > 0 ? (
+              {application.candidate.training_history && application.candidate.training_history.length > 0 ? (
                 <div className="training-list">
-                  {application.candidate.training.map((train, index) => (
+                  {application.candidate.training_history.map((train, index) => (
                     <div key={index} className="training-item">
                       <div className="train-header">
                         <h3>{train.course_name || train.title}</h3>
