@@ -127,6 +127,12 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
             if 'other_documents' in candidate_data:
                 candidate.other_documents = candidate_data['other_documents']
                 updated = True
+            if candidate_data.get('education_history'):
+                candidate.education_history = candidate_data['education_history']
+                updated = True
+            if candidate_data.get('training_history'):
+                candidate.training_history = candidate_data['training_history']
+                updated = True
             if updated:
                 candidate.save()
         
